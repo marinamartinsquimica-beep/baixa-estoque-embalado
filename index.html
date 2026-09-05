@@ -14,21 +14,12 @@ body{margin:0;background:#f4f6f8;font-family:Arial,sans-serif;color:#285674;disp
 <script>
 (async()=>{
   const APP_URL='https://raw.githubusercontent.com/marinamartinsquimica-beep/baixa-estoque-embalado/ec1e2d92df34dcb18ea04a425b7f6003cd14d37d/index.html';
-  const LOGO_SOURCE='https://raw.githubusercontent.com/aia-raiar/raiar/main/suporte_paripassu/index.html';
   try{
-    const [appResp,logoResp]=await Promise.all([fetch(APP_URL,{cache:'no-store'}),fetch(LOGO_SOURCE,{cache:'force-cache'})]);
+    const appResp=await fetch(APP_URL,{cache:'no-store'});
     if(!appResp.ok) throw new Error('Não foi possível carregar a aplicação base.');
     let app=await appResp.text();
-    let logo='';
-    if(logoResp.ok){
-      const ref=await logoResp.text();
-      const m=ref.match(/<img[^>]+src="(data:image\/[^\"]+)"[^>]*>/i);
-      if(m) logo=m[1];
-    }
-    if(logo){
-      app=app.replace(/<svg class="hero-logo"[\s\S]*?<\/svg>/i,`<img class="hero-logo" src="${logo}" alt="Raiar Orgânicos">`);
-      app=app.replace('</style>','.hero-logo{mix-blend-mode:screen!important;filter:none!important;background:transparent!important;object-fit:contain!important}</style>');
-    }
+    app=app.replace(/<svg class="hero-logo"[\s\S]*?<\/svg>/i,'<img class="hero-logo" src="./logo.png?v=1.0.13" alt="Raiar Orgânicos">');
+    app=app.replace('</style>','.hero-logo{display:block!important;width:auto!important;max-width:190px!important;height:72px!important;object-fit:contain!important;object-position:left center!important;background:transparent!important}</style>');
     app=app.replaceAll('v1.0.12','v1.0.13');
     app=app.replaceAll('ESTOQUE_EMBALADO_ATUALIZADO_v1.0.12_','ESTOQUE_EMBALADO_ATUALIZADO_v1.0.13_');
     document.open();
