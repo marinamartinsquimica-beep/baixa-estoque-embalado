@@ -15,7 +15,7 @@
 </style>
 </head>
 <body>
-<section class="hero-shell"><div class="hero-top"><div><img class="hero-logo" src="logo.png" alt="Raiar Orgânicos"></div><div class="hero-ident">Sala de ovos - Baixa Estoque</div><div class="hero-version">v1.2.3</div></div><div class="hero-main"><div class="hero-kicker">Controle de Estoque</div><div class="hero-title">Baixa de Estoque Embalado</div></div><div class="hero-wave"></div></section>
+<section class="hero-shell"><div class="hero-top"><div><img class="hero-logo" src="logo.png" alt="Raiar Orgânicos"></div><div class="hero-ident">Sala de ovos - Baixa Estoque</div><div class="hero-version">v1.2.4</div></div><div class="hero-main"><div class="hero-kicker">Controle de Estoque</div><div class="hero-title">Baixa de Estoque Embalado</div></div><div class="hero-wave"></div></section>
 <div class="wrap">
 <div class="tabs" role="tablist" aria-label="Funções do estoque"><button id="tabBaixa" class="tab-btn active" type="button" role="tab" aria-selected="true">BAIXA ESTOQUE</button><button id="tabAjuste" class="tab-btn" type="button" role="tab" aria-selected="false">AJUSTE ESTOQUE</button></div>
 
@@ -36,11 +36,11 @@
 <div id="ajusteDetailCard" class="tablecard hidden"><div class="tablehead"><h2>Conferência do ajuste</h2><span id="ajusteDetailCount" class="filename"></span></div><div class="scroll"><table><thead><tr><th>SKU</th><th>Lote completo</th><th>Linhas no romaneio</th><th>Caixas ajustadas</th><th>Produto</th><th>Status</th></tr></thead><tbody id="ajusteDetailBody"></tbody></table></div></div>
 </section>
 </div>
-<div class="raiar-footer">© Raiar Orgânicos S.A. · Uso interno · Sala de ovos - Baixa Estoque · v1.2.3 · Criado por Marina Martins Costa</div><div id="avisoAtualizacao" class="update-banner" role="status" aria-live="polite" hidden><div><strong>Nova versão disponível</strong><span>Atualize para usar a versão mais recente.</span></div><button id="atualizarAgora" type="button">Nova versão · Atualizar</button></div>
+<div class="raiar-footer">© Raiar Orgânicos S.A. · Uso interno · Sala de ovos - Baixa Estoque · v1.2.4 · Criado por Marina Martins Costa</div><div id="avisoAtualizacao" class="update-banner" role="status" aria-live="polite" hidden><div><strong>Nova versão disponível</strong><span>Atualize para usar a versão mais recente.</span></div><button id="atualizarAgora" type="button">Nova versão · Atualizar</button></div>
 <script>
 (()=>{
 "use strict";
-const APP_VERSION="v1.2.3",NS="http://schemas.openxmlformats.org/spreadsheetml/2006/main",RELNS="http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+const APP_VERSION="v1.2.4",NS="http://schemas.openxmlformats.org/spreadsheetml/2006/main",RELNS="http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 const estoqueInput=document.getElementById("estoqueFile"),romInput=document.getElementById("romaneioFile"),processBtn=document.getElementById("processBtn"),downloadBtn=document.getElementById("downloadBtn"),clearBtn=document.getElementById("clearBtn"),statusEl=document.getElementById("status"),metricsEl=document.getElementById("metrics"),detailCard=document.getElementById("detailCard"),detailBody=document.getElementById("detailBody"),ajusteEstoqueInput=document.getElementById("ajusteEstoqueFile"),ajusteRomInput=document.getElementById("ajusteRomaneioFile"),ajusteProcessBtn=document.getElementById("ajusteProcessBtn"),ajusteDownloadBtn=document.getElementById("ajusteDownloadBtn"),ajusteClearBtn=document.getElementById("ajusteClearBtn"),ajusteStatusEl=document.getElementById("ajusteStatus"),ajusteMetricsEl=document.getElementById("ajusteMetrics"),ajusteDetailCard=document.getElementById("ajusteDetailCard"),ajusteDetailBody=document.getElementById("ajusteDetailBody");let resultBlob=null,outputName="",ajusteResultBlob=null,ajusteOutputName="";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const normText=v=>String(v??"").trim().replace(/\s+/g," ").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
@@ -59,7 +59,7 @@ class XlsxXML{
  rowValues(row){const o={};[...row.getElementsByTagNameNS(NS,"c")].forEach(c=>o[colLetters(c.getAttribute("r"))]=this.value(c));return o}
  findCell(row,col){return[...row.getElementsByTagNameNS(NS,"c")].find(c=>colLetters(c.getAttribute("r"))===col)||null}
  ensureCell(row,col,rn){let c=this.findCell(row,col);if(c)return c;c=row.ownerDocument.createElementNS(NS,"c");c.setAttribute("r",cellRef(col,rn));row.appendChild(c);return c}
- clearCellContent(c){[...c.childNodes].forEach(n=>{if(["f","v","is"].includes(n.localName))c.removeChild(n)});c.removeAttribute("t")}
+ clearCellContent(c){[...c.childNodes].forEach(n=>{if(["f","v","is"].includes(n.localName))c.removeChild(n)});c.removeAttribute("t");c.removeAttribute("cm");c.removeAttribute("vm")}
  setNumber(c,v,formula=null){this.clearCellContent(c);if(formula){const f=c.ownerDocument.createElementNS(NS,"f");f.textContent=formula;c.appendChild(f)}const n=c.ownerDocument.createElementNS(NS,"v");n.textContent=String(Number(v)||0);c.appendChild(n)}
  setString(c,v,formula=null){this.clearCellContent(c);if(formula){const f=c.ownerDocument.createElementNS(NS,"f");f.textContent=formula;c.appendChild(f);c.setAttribute("t","str");const n=c.ownerDocument.createElementNS(NS,"v");n.textContent=String(v??"");c.appendChild(n)}else{c.setAttribute("t","inlineStr");const is=c.ownerDocument.createElementNS(NS,"is"),t=c.ownerDocument.createElementNS(NS,"t");t.textContent=String(v??"");is.appendChild(t);c.appendChild(is)}}
  async saveSheet(s){this.zip.file(s.path,this.serializer.serializeToString(s.doc))}
@@ -78,7 +78,12 @@ function rowByNumber(xlsx,doc,rn){return xlsx.rows(doc).find(r=>+r.getAttribute(
 function setFormulaCache(xlsx,doc,rn,col,value,type="number"){const row=rowByNumber(xlsx,doc,rn);if(!row)return;const c=xlsx.findCell(row,col);if(!c)return;const hasFormula=!!c.getElementsByTagNameNS(NS,"f")[0];if(!hasFormula){if(type==="string")xlsx.setString(c,value);else xlsx.setNumber(c,value);return}let v=c.getElementsByTagNameNS(NS,"v")[0];if(!v){v=c.ownerDocument.createElementNS(NS,"v");c.appendChild(v)}if(type==="string"){c.setAttribute("t","str");v.textContent=String(value??"")}else{c.removeAttribute("t");v.textContent=String(Number(value)||0)}}
 function rowHeaderMap(xlsx,row){const m={};Object.entries(xlsx.rowValues(row)).forEach(([c,v])=>{const k=normText(v);if(k)m[k]=c});return m}
 function findHeaderRow(xlsx,doc,required){for(const row of xlsx.rows(doc)){const m=rowHeaderMap(xlsx,row);if(required.every(k=>m[k]))return{row,rowNum:+row.getAttribute("r"),map:m}}return null}
-function setPanelCardByLabel(xlsx,doc,label,value){for(const row of xlsx.rows(doc)){const m=rowHeaderMap(xlsx,row),col=m[normText(label)];if(!col)continue;setFormulaCache(xlsx,doc,+row.getAttribute("r")+1,col,value);return true}return false}
+function colNumber(col){let n=0;for(const ch of String(col||"").toUpperCase())n=n*26+ch.charCodeAt(0)-64;return n}
+function rowHeaderEntries(xlsx,row){return[...row.getElementsByTagNameNS(NS,"c")].map(c=>({col:colLetters(c.getAttribute("r")),key:normText(xlsx.value(c))})).filter(x=>x.key)}
+function findPanelSizeHeader(xlsx,doc){for(const row of xlsx.rows(doc)){const e=rowHeaderEntries(xlsx,row),ovos=e.find(x=>x.key==="OVOS EM ESTOQUE");if(!ovos)continue;const before=e.filter(x=>x.key==="TAMANHO"&&colNumber(x.col)<colNumber(ovos.col));if(before.length)return{rowNum:+row.getAttribute("r"),tamanhoCol:before[before.length-1].col,ovosCol:ovos.col}}return null}
+function findPanelSkuHeader(xlsx,doc){for(const row of xlsx.rows(doc)){const e=rowHeaderEntries(xlsx,row);for(let i=0;i<e.length;i++){if(e[i].key!=="SKU")continue;const produto=e.slice(i+1).find(x=>x.key==="PRODUTO");if(!produto)continue;const tamanho=e.find(x=>x.key==="TAMANHO"&&colNumber(x.col)>colNumber(produto.col));if(!tamanho)continue;const caixas=e.find(x=>x.key==="CAIXAS"&&colNumber(x.col)>colNumber(tamanho.col));if(!caixas)continue;const ovos=e.find(x=>x.key==="OVOS"&&colNumber(x.col)>colNumber(caixas.col));if(!ovos)continue;return{rowNum:+row.getAttribute("r"),skuCol:e[i].col,produtoCol:produto.col,tamanhoCol:tamanho.col,caixasCol:caixas.col,ovosCol:ovos.col}}}return null}
+function panelSummaryEndRow(doc,header){const af=[...doc.getElementsByTagNameNS(NS,"autoFilter")].find(x=>{const ref=x.getAttribute("ref")||"";return ref.startsWith(header.skuCol+header.rowNum+":")});if(af){const m=(af.getAttribute("ref")||"").match(/:(?:[A-Z]+)(\d+)$/);if(m)return Number(m[1])}return header.rowNum+89}
+function setPanelCardByLabel(xlsx,doc,label,value){for(const row of xlsx.rows(doc)){const e=rowHeaderEntries(xlsx,row).find(x=>x.key===normText(label));if(!e)continue;const target=rowByNumber(xlsx,doc,+row.getAttribute("r")+1);if(!target)return false;xlsx.setNumber(xlsx.ensureCell(target,e.col,+row.getAttribute("r")+1),value);return true}return false}
 async function priorityOrder(xlsx,bySku){
  const p=await xlsx.sheetByName("Prioridade"),rank=new Map();if(p){const h=findHeaderRow(xlsx,p.doc,["SKU","PRIORIDADE"]);if(h){for(const row of xlsx.rows(p.doc)){const rn=+row.getAttribute("r");if(rn<=h.rowNum)continue;const sku=normSku(xlsx.value(xlsx.findCell(row,h.map["SKU"]))),prio=num(xlsx.value(xlsx.findCell(row,h.map["PRIORIDADE"])));if(sku&&!rank.has(sku))rank.set(sku,Number.isFinite(prio)&&prio>0?prio:999999)}}}
  return [...bySku.values()].filter(x=>x.caixas>0).sort((a,b)=>{const pa=rank.get(a.sku)??999999,pb=rank.get(b.sku)??999999;if(pa!==pb)return pa-pb;return (Number(a.sku)||999999999)-(Number(b.sku)||999999999)})
@@ -91,15 +96,15 @@ async function updateDependentCaches(xlsx,finalRecords){
   setPanelCardByLabel(xlsx,painel.doc,"CAIXAS EM ESTOQUE",totalCx);
   setPanelCardByLabel(xlsx,painel.doc,"OVOS EM ESTOQUE",totalOvos);
   setPanelCardByLabel(xlsx,painel.doc,"SKUs COM ESTOQUE",skuList.length);
-  const sizeHeader=findHeaderRow(xlsx,painel.doc,["TAMANHO","OVOS EM ESTOQUE"]);
+  const sizeHeader=findPanelSizeHeader(xlsx,painel.doc);
   if(sizeHeader){
-   const labels=["PEQUENO","MÉDIO","GRANDE","JUMBO"],sizeCol=sizeHeader.map["TAMANHO"],ovosCol=sizeHeader.map["OVOS EM ESTOQUE"];
-   labels.forEach((label,i)=>{const rn=sizeHeader.rowNum+1+i,row=rowByNumber(xlsx,painel.doc,rn);if(!row)return;xlsx.setString(xlsx.ensureCell(row,sizeCol,rn),label);setFormulaCache(xlsx,painel.doc,rn,ovosCol,bySize.get(normText(label))||0)});
+   const labels=["PEQUENO","MÉDIO","GRANDE","JUMBO"];
+   labels.forEach((label,i)=>{const rn=sizeHeader.rowNum+1+i,row=rowByNumber(xlsx,painel.doc,rn);if(!row)return;xlsx.setString(xlsx.ensureCell(row,sizeHeader.tamanhoCol,rn),label);xlsx.setNumber(xlsx.ensureCell(row,sizeHeader.ovosCol,rn),bySize.get(normText(label))||0)});
   }
-  const skuHeader=findHeaderRow(xlsx,painel.doc,["SKU","PRODUTO","TAMANHO","CAIXAS","OVOS"]);
+  const skuHeader=findPanelSkuHeader(xlsx,painel.doc);
   if(skuHeader){
-   const cols={sku:skuHeader.map["SKU"],produto:skuHeader.map["PRODUTO"],tamanho:skuHeader.map["TAMANHO"],caixas:skuHeader.map["CAIXAS"],ovos:skuHeader.map["OVOS"]};
-   for(let i=0;i<44;i++){const rn=skuHeader.rowNum+1+i,item=skuList[i],row=rowByNumber(xlsx,painel.doc,rn);if(!row)continue;if(item){const skuNum=Number(item.sku);setFormulaCache(xlsx,painel.doc,rn,cols.sku,Number.isFinite(skuNum)?skuNum:item.sku,Number.isFinite(skuNum)?"number":"string");setFormulaCache(xlsx,painel.doc,rn,cols.produto,item.produto,"string");setFormulaCache(xlsx,painel.doc,rn,cols.tamanho,item.tamanho,"string");setFormulaCache(xlsx,painel.doc,rn,cols.caixas,item.caixas);setFormulaCache(xlsx,painel.doc,rn,cols.ovos,item.ovos)}else{setFormulaCache(xlsx,painel.doc,rn,cols.sku,"","string");setFormulaCache(xlsx,painel.doc,rn,cols.produto,"","string");setFormulaCache(xlsx,painel.doc,rn,cols.tamanho,"","string");setFormulaCache(xlsx,painel.doc,rn,cols.caixas,"","string");setFormulaCache(xlsx,painel.doc,rn,cols.ovos,"","string")}}
+   const endRow=panelSummaryEndRow(painel.doc,skuHeader);
+   for(let rn=skuHeader.rowNum+1;rn<=endRow;rn++){const item=skuList[rn-skuHeader.rowNum-1],row=rowByNumber(xlsx,painel.doc,rn);if(!row)continue;const cells={sku:xlsx.ensureCell(row,skuHeader.skuCol,rn),produto:xlsx.ensureCell(row,skuHeader.produtoCol,rn),tamanho:xlsx.ensureCell(row,skuHeader.tamanhoCol,rn),caixas:xlsx.ensureCell(row,skuHeader.caixasCol,rn),ovos:xlsx.ensureCell(row,skuHeader.ovosCol,rn)};if(item){const skuNum=Number(item.sku);if(Number.isFinite(skuNum))xlsx.setNumber(cells.sku,skuNum);else xlsx.setString(cells.sku,item.sku);xlsx.setString(cells.produto,item.produto);xlsx.setString(cells.tamanho,item.tamanho);xlsx.setNumber(cells.caixas,item.caixas);xlsx.setNumber(cells.ovos,item.ovos)}else{xlsx.setString(cells.sku,"");xlsx.setString(cells.produto,"");xlsx.setString(cells.tamanho,"");xlsx.setString(cells.caixas,"");xlsx.setString(cells.ovos,"")}}
   }
   await xlsx.saveSheet(painel);
  }
@@ -119,7 +124,7 @@ estoqueInput.addEventListener("change",()=>{document.getElementById("estoqueName
 </script>
 <script>
 (()=>{"use strict";
- const CURRENT_VERSION="v1.2.3",LOCAL_FILE=location.protocol==="file:";
+ const CURRENT_VERSION="v1.2.4",LOCAL_FILE=location.protocol==="file:";
  const REMOTE_BASE="https://raw.githubusercontent.com/marinamartinsquimica-beep/baixa-estoque-embalado/main/";
  const notice=document.getElementById("avisoAtualizacao"),button=document.getElementById("atualizarAgora"),message=notice.querySelector("span");
  if(LOCAL_FILE)button.textContent="Nova versão · Baixar";
