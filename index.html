@@ -15,7 +15,7 @@
 </style>
 </head>
 <body>
-<section class="hero-shell"><div class="hero-top"><div><img class="hero-logo" src="logo.png" alt="Raiar Orgânicos"></div><div class="hero-ident">Sala de ovos - Baixa Estoque</div><div class="hero-version">v1.2.5</div></div><div class="hero-main"><div class="hero-kicker">Controle de Estoque</div><div class="hero-title">Baixa de Estoque Embalado</div></div><div class="hero-wave"></div></section>
+<section class="hero-shell"><div class="hero-top"><div><img class="hero-logo" src="logo.png" alt="Raiar Orgânicos"></div><div class="hero-ident">Sala de ovos - Baixa Estoque</div><div class="hero-version">v1.2.6</div></div><div class="hero-main"><div class="hero-kicker">Controle de Estoque</div><div class="hero-title">Baixa de Estoque Embalado</div></div><div class="hero-wave"></div></section>
 <div class="wrap">
 <div class="tabs" role="tablist" aria-label="Funções do estoque"><button id="tabBaixa" class="tab-btn active" type="button" role="tab" aria-selected="true">BAIXA ESTOQUE</button><button id="tabAjuste" class="tab-btn" type="button" role="tab" aria-selected="false">AJUSTE ESTOQUE</button></div>
 
@@ -36,11 +36,11 @@
 <div id="ajusteDetailCard" class="tablecard hidden"><div class="tablehead"><h2>Conferência do ajuste</h2><span id="ajusteDetailCount" class="filename"></span></div><div class="scroll"><table><thead><tr><th>SKU</th><th>Lote completo</th><th>Linhas no romaneio</th><th>Caixas ajustadas</th><th>Produto</th><th>Status</th></tr></thead><tbody id="ajusteDetailBody"></tbody></table></div></div>
 </section>
 </div>
-<div class="raiar-footer">© Raiar Orgânicos S.A. · Uso interno · Sala de ovos - Baixa Estoque · v1.2.5 · Criado por Marina Martins Costa</div><div id="avisoAtualizacao" class="update-banner" role="status" aria-live="polite" hidden><div><strong>Nova versão disponível</strong><span>Atualize para usar a versão mais recente.</span></div><button id="atualizarAgora" type="button">Nova versão · Atualizar</button></div>
+<div class="raiar-footer">© Raiar Orgânicos S.A. · Uso interno · Sala de ovos - Baixa Estoque · v1.2.6 · Criado por Marina Martins Costa</div><div id="avisoAtualizacao" class="update-banner" role="status" aria-live="polite" hidden><div><strong>Nova versão disponível</strong><span>Atualize para usar a versão mais recente.</span></div><button id="atualizarAgora" type="button">Nova versão · Atualizar</button></div>
 <script>
 (()=>{
 "use strict";
-const APP_VERSION="v1.2.5",NS="http://schemas.openxmlformats.org/spreadsheetml/2006/main",RELNS="http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+const APP_VERSION="v1.2.6",NS="http://schemas.openxmlformats.org/spreadsheetml/2006/main",RELNS="http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 const estoqueInput=document.getElementById("estoqueFile"),romInput=document.getElementById("romaneioFile"),processBtn=document.getElementById("processBtn"),downloadBtn=document.getElementById("downloadBtn"),clearBtn=document.getElementById("clearBtn"),statusEl=document.getElementById("status"),metricsEl=document.getElementById("metrics"),detailCard=document.getElementById("detailCard"),detailBody=document.getElementById("detailBody"),ajusteEstoqueInput=document.getElementById("ajusteEstoqueFile"),ajusteRomInput=document.getElementById("ajusteRomaneioFile"),ajusteProcessBtn=document.getElementById("ajusteProcessBtn"),ajusteDownloadBtn=document.getElementById("ajusteDownloadBtn"),ajusteClearBtn=document.getElementById("ajusteClearBtn"),ajusteStatusEl=document.getElementById("ajusteStatus"),ajusteMetricsEl=document.getElementById("ajusteMetrics"),ajusteDetailCard=document.getElementById("ajusteDetailCard"),ajusteDetailBody=document.getElementById("ajusteDetailBody");let resultBlob=null,outputName="",ajusteResultBlob=null,ajusteOutputName="";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const normText=v=>String(v??"").trim().replace(/\s+/g," ").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
@@ -123,7 +123,7 @@ estoqueInput.addEventListener("change",()=>{document.getElementById("estoqueName
 </script>
 <script>
 (()=>{"use strict";
- const CURRENT_VERSION="v1.2.5",LOCAL_FILE=location.protocol==="file:";
+ const CURRENT_VERSION="v1.2.6",LOCAL_FILE=location.protocol==="file:";
  const REMOTE_BASE="https://raw.githubusercontent.com/marinamartinsquimica-beep/baixa-estoque-embalado/main/";
  const notice=document.getElementById("avisoAtualizacao"),button=document.getElementById("atualizarAgora"),message=notice.querySelector("span");
  if(LOCAL_FILE)button.textContent="Nova versão · Baixar";
@@ -131,7 +131,7 @@ estoqueInput.addEventListener("change",()=>{document.getElementById("estoqueName
  async function checkUpdate(){
   if(checking)return;checking=true;
   try{
-   const url=new URL("version.json",LOCAL_FILE?REMOTE_BASE:document.baseURI);url.searchParams.set("check",String(Date.now()));
+   const url=new URL("version.json",REMOTE_BASE);url.searchParams.set("check",String(Date.now()));
    const response=await fetch(url.toString(),{cache:"no-store"});
    if(!response.ok)return;
    const info=await response.json();
@@ -144,7 +144,11 @@ estoqueInput.addEventListener("change",()=>{document.getElementById("estoqueName
   if(!newest)return;
   button.disabled=true;button.textContent="Atualizando…";
   if(!LOCAL_FILE){
-   const url=new URL(location.href);url.searchParams.set("versao",newest);url.searchParams.set("atualizado",String(Date.now()));location.replace(url.toString());return
+   try{
+    const url=new URL("index.html",REMOTE_BASE);url.searchParams.set("versao",newest);url.searchParams.set("atualizado",String(Date.now()));
+    const response=await fetch(url.toString(),{cache:"no-store"});if(!response.ok)throw Error("Atualização indisponível");
+    const latestHtml=await response.text();document.open();document.write(latestHtml);document.close();return
+   }catch(_error){message.textContent="Não foi possível carregar a nova versão agora. Tente novamente.";button.textContent="Tentar novamente";button.disabled=false;return}
   }
   try{
    const url=new URL("index.html",REMOTE_BASE);url.searchParams.set("versao",newest);url.searchParams.set("baixar",String(Date.now()));
