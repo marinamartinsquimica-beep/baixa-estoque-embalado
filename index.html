@@ -15,12 +15,12 @@
 </style>
 </head>
 <body>
-<section class="hero-shell"><div class="hero-top"><div><img class="hero-logo" src="logo.png" alt="Raiar Orgânicos"></div><div class="hero-ident">Sala de ovos - Baixa Estoque</div><div class="hero-version">v1.2.8</div></div><div class="hero-main"><div class="hero-kicker">Controle de Estoque</div><div class="hero-title">Baixa de Estoque Embalado</div></div><div class="hero-wave"></div></section>
+<section class="hero-shell"><div class="hero-top"><div><img class="hero-logo" src="logo.png" alt="Raiar Orgânicos"></div><div class="hero-ident">Sala de ovos - Baixa Estoque</div><div class="hero-version">v1.2.9</div></div><div class="hero-main"><div class="hero-kicker">Controle de Estoque</div><div class="hero-title">Baixa de Estoque Embalado</div></div><div class="hero-wave"></div></section>
 <div class="wrap">
 <div class="tabs" role="tablist" aria-label="Funções do estoque"><button id="tabBaixa" class="tab-btn active" type="button" role="tab" aria-selected="true">BAIXA ESTOQUE</button><button id="tabAjuste" class="tab-btn" type="button" role="tab" aria-selected="false">AJUSTE ESTOQUE</button></div>
 
 <section id="paneBaixa" class="tab-pane">
-<div class="grid"><div class="card"><h2><span class="step-label">1</span>Estoque Embalado — Tem-Não Tem</h2><div class="filebox"><input id="estoqueFile" type="file" accept=".xlsx"><div id="estoqueName" class="filename">Nenhum arquivo selecionado.</div></div></div><div class="card"><h2><span class="step-label">2</span>Romaneio</h2><div class="filebox"><input id="romaneioFile" type="file" accept=".xlsx"><div id="romaneioName" class="filename">Nenhum arquivo selecionado.</div></div></div></div>
+<div class="grid"><div class="card"><h2><span class="step-label">1</span>ESTOQUE EMBALADO</h2><div class="filebox"><input id="estoqueFile" type="file" accept=".xlsx"><div id="estoqueName" class="filename">Nenhum arquivo selecionado.</div></div></div><div class="card"><h2><span class="step-label">2</span>Romaneio</h2><div class="filebox"><input id="romaneioFile" type="file" accept=".xlsx"><div id="romaneioName" class="filename">Nenhum arquivo selecionado.</div></div></div></div>
 <div class="actions"><button id="processBtn" class="primary" disabled>Processar baixa</button><button id="downloadBtn" class="success" disabled>Baixar Estoque atualizado</button><button id="clearBtn" class="secondary">Limpar</button></div>
 <div id="status" class="status"></div>
 <div id="metrics" class="metrics hidden"><div class="metric"><div class="label">Linhas romaneio</div><div id="mLinhas" class="value">0</div></div><div class="metric"><div class="label">Chaves únicas</div><div id="mChaves" class="value">0</div></div><div class="metric"><div class="label">Caixas solicitadas</div><div id="mCx" class="value">0</div></div><div class="metric"><div class="label">Caixas baixadas</div><div id="mBaixadas" class="value">0</div></div><div class="metric"><div class="label">Linhas zeradas removidas</div><div id="mRemovidas" class="value">0</div></div><div class="metric"><div class="label">Não baixadas</div><div id="mNaoBaixadas" class="value">0</div></div><div class="metric"><div class="label">Estoque antes da baixa · caixas</div><div id="mEstoqueAntes" class="value">0</div></div><div class="metric"><div class="label">Estoque após a baixa · caixas</div><div id="mEstoqueDepois" class="value">0</div></div></div>
@@ -36,11 +36,11 @@
 <div id="ajusteDetailCard" class="tablecard hidden"><div class="tablehead"><h2>Conferência do ajuste</h2><span id="ajusteDetailCount" class="filename"></span></div><div class="scroll"><table><thead><tr><th>SKU</th><th>Lote completo</th><th>Linhas no romaneio</th><th>Caixas ajustadas</th><th>Produto</th><th>Status</th></tr></thead><tbody id="ajusteDetailBody"></tbody></table></div></div>
 </section>
 </div>
-<div class="raiar-footer">© Raiar Orgânicos S.A. · Uso interno · Sala de ovos - Baixa Estoque · v1.2.8 · Criado por Marina Martins Costa</div><div id="avisoAtualizacao" class="update-banner" role="status" aria-live="polite" hidden><div><strong>Nova versão disponível</strong><span>Atualize para usar a versão mais recente.</span></div><button id="atualizarAgora" type="button">Nova versão · Atualizar</button></div>
+<div class="raiar-footer">© Raiar Orgânicos S.A. · Uso interno · Sala de ovos - Baixa Estoque · v1.2.9 · Criado por Marina Martins Costa</div><div id="avisoAtualizacao" class="update-banner" role="status" aria-live="polite" hidden><div><strong>Nova versão disponível</strong><span>Atualize para usar a versão mais recente.</span></div><button id="atualizarAgora" type="button">Nova versão · Atualizar</button></div>
 <script>
 (()=>{
 "use strict";
-const APP_VERSION="v1.2.8",NS="http://schemas.openxmlformats.org/spreadsheetml/2006/main",RELNS="http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+const APP_VERSION="v1.2.9",NS="http://schemas.openxmlformats.org/spreadsheetml/2006/main",RELNS="http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 const estoqueInput=document.getElementById("estoqueFile"),romInput=document.getElementById("romaneioFile"),processBtn=document.getElementById("processBtn"),downloadBtn=document.getElementById("downloadBtn"),clearBtn=document.getElementById("clearBtn"),statusEl=document.getElementById("status"),metricsEl=document.getElementById("metrics"),detailCard=document.getElementById("detailCard"),detailBody=document.getElementById("detailBody"),ajusteEstoqueInput=document.getElementById("ajusteEstoqueFile"),ajusteRomInput=document.getElementById("ajusteRomaneioFile"),ajusteProcessBtn=document.getElementById("ajusteProcessBtn"),ajusteDownloadBtn=document.getElementById("ajusteDownloadBtn"),ajusteClearBtn=document.getElementById("ajusteClearBtn"),ajusteStatusEl=document.getElementById("ajusteStatus"),ajusteMetricsEl=document.getElementById("ajusteMetrics"),ajusteDetailCard=document.getElementById("ajusteDetailCard"),ajusteDetailBody=document.getElementById("ajusteDetailBody");let resultBlob=null,outputName="",ajusteResultBlob=null,ajusteOutputName="";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const normText=v=>String(v??"").trim().replace(/\s+/g," ").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
@@ -123,7 +123,7 @@ estoqueInput.addEventListener("change",()=>{document.getElementById("estoqueName
 </script>
 <script>
 (()=>{"use strict";
- const CURRENT_VERSION="v1.2.8",LOCAL_FILE=location.protocol==="file:";
+ const CURRENT_VERSION="v1.2.9",LOCAL_FILE=location.protocol==="file:";
  const REMOTE_BASE="https://raw.githubusercontent.com/marinamartinsquimica-beep/baixa-estoque-embalado/main/";
  const notice=document.getElementById("avisoAtualizacao"),button=document.getElementById("atualizarAgora"),message=notice.querySelector("span");
  if(LOCAL_FILE)button.textContent="Nova versão · Baixar";
