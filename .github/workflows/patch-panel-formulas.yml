@@ -1,0 +1,57 @@
+name: Patch Panel Formulas
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/patch-panel-formulas.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch index and version
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          start=s.index("async function updateDependentCaches")
+          end=s.index("function renderDetails", start)
+          replacement=base64.b64decode("YXN5bmMgZnVuY3Rpb24gdXBkYXRlRGVwZW5kZW50Q2FjaGVzKHhsc3gsZmluYWxSZWNvcmRzKXsKIGNvbnN0IGJ5U2t1PW5ldyBNYXAoKSxieVNpemU9bmV3IE1hcCgpO2xldCB0b3RhbEN4PTAsdG90YWxPdm9zPTA7CiBmb3IoY29uc3QgciBvZiBmaW5hbFJlY29yZHMpe2NvbnN0IGN4PU51bWJlcihyLnNhbGRvKXx8MCxvdm9zPU51bWJlcihyLm92b3MpfHwwLHNrdT1ub3JtU2t1KHIuc2t1KSxzaXplPW5vcm1UZXh0KHIudGFtYW5obyk7dG90YWxDeCs9Y3g7dG90YWxPdm9zKz1vdm9zO2J5U2l6ZS5zZXQoc2l6ZSwoYnlTaXplLmdldChzaXplKXx8MCkrb3Zvcyk7aWYoIWJ5U2t1Lmhhcyhza3UpKWJ5U2t1LnNldChza3Use3NrdSxwcm9kdXRvOnIucHJvZHV0byx0YW1hbmhvOnIudGFtYW5obyxjYWl4YXM6MCxvdm9zOjB9KTtjb25zdCBzPWJ5U2t1LmdldChza3UpO3MuY2FpeGFzKz1jeDtzLm92b3MrPW92b3N9CiBjb25zdCBza3VMaXN0PWF3YWl0IHByaW9yaXR5T3JkZXIoeGxzeCxieVNrdSkscGFpbmVsPWF3YWl0IHhsc3guc2hlZXRCeU5hbWUoIlBhaW5lbCIpOwogaWYocGFpbmVsKXsKICAvLyBPIFBhaW5lbCB2b2x0YSBhIHNlciBkaXJpZ2lkbyBwb3IgZsOzcm11bGFzIGNvbXVucyBkbyBFeGNlbCAoc2VtIEZJTFRFUi9keW5hbWljIGFycmF5cykuCiAgLy8gQXNzaW0gZWxlIGFjb21wYW5oYSBxdWFscXVlciBhbHRlcmHDp8OjbyBwb3N0ZXJpb3IgbmEgYWJhIEVzdG9xdWUgZSBuw6NvIGRlcGVuZGUgZGUgY2FjaGVzIGVzdMOhdGljb3MuCiAgY29uc3Qgc2V0Rm9ybXVsYUF0PShyZWYsZm9ybXVsYSx2YWx1ZSx0eXBlPSJudW1iZXIiKT0+e2NvbnN0IG09cmVmLm1hdGNoKC9eKFtBLVpdKykoXGQrKSQvKSxybj1OdW1iZXIobVsyXSkscm93PXJvd0J5TnVtYmVyKHhsc3gscGFpbmVsLmRvYyxybik7aWYoIXJvdylyZXR1cm47Y29uc3QgY2VsbD14bHN4LmVuc3VyZUNlbGwocm93LG1bMV0scm4pO2lmKHR5cGU9PT0ic3RyaW5nIil4bHN4LnNldFN0cmluZyhjZWxsLHZhbHVlPz8iIixmb3JtdWxhKTtlbHNlIHhsc3guc2V0TnVtYmVyKGNlbGwsTnVtYmVyKHZhbHVlKXx8MCxmb3JtdWxhKX07CiAgc2V0Rm9ybXVsYUF0KCJCNSIsJ1NVTShFc3RvcXVlISRKJDQ6JEokMjA3NSknLHRvdGFsQ3gpOwogIHNldEZvcm11bGFQdCgiRjUiLCdTVU0oRXN0b3F1ZSEkSyQ0OiRLJDIwNzUpJyx0b3RhbE92b3MpOwogIHNldEZvcm11bGFQdCgiSjUiLCdDT1VOVElGKFByaW9yaWRhZGUhJEUkMjokRSQxMDAsIj4wIiknLHNrdUxpc3QubGVuZ3RoKTsKICBjb25zdCBsYWJlbHM9WyJQRVFVRU5PIiwiTcOJRElPIiwiR1JBTkRFIiwiSlVNQk8iXTsKICBsYWJlbHMuZm9yRWFjaCgobGFiZWwsaSk9Pntjb25zdCBybj0xMStpLHJvdz1yb3dCeU51bWJlcih4bHN4LHBhaW5lbC5kb2Mscm4pO2lmKCFyb3cpcmV0dXJuO3hsc3guc2V0U3RyaW5nKHhsc3guZW5zdXJlQ2VsbChyb3csIkIiLHJuKSxsYWJlbCk7c2V0Rm9ybXVsYUF0KCJDIitybixgU1VNSUYoRXN0b3F1ZSEkQyQ0OiRDJDIwNzUsQiR7cm59LEVzdG9xdWUhJEskNDokSyQyMDc1KWA sLGJ5U2l6ZS5nZXQobm9ybVRleHQobGFiZWwpKXx8MCl9KTsKICBmb3IobGV0IHJuPTExO3JuPD05OTtybisrKXsKICAgY29uc3QgaXRlbT1za3VMaXN0W3JuLTExXSxnPWBJRkVSUk9S KElOREVYKFByaW9yaWRhZGUhJEEkMjokQSQxMDAsTUFUQ0goUk9XKCktMTAsUHJpb3JpZGFkZSEkRiQyOiRGJDEwMCwwKSksIiIpYCxoPWBJRihHJHtybn09IiIsIiIsSUZFUlJPUihJTkRFWChQcmlvcmlkYWRlISR CJDIkOkIkMTAwLE1BVENIKEcke3JufSxQcmlvcmlkYWRlISR BJDIkOkEkMTAwLDApKSwiIikpYCxpPWBJRihHJHtybn09IiIsIiIsSUZFUlJPUihJTkRFWChDYWRhc3RybyEkQyQyOiRDJDEwMDAsTUFUQ0goRyR7cm59LENhZGFzdHJvISR BJDIkOkEkMTAwMCwwKSksIiIpKWAsaj1gSUYoRyR7cm59PSIiLCIiLFNVTUlGKEVzdG9xdWUhJEEkNDokQSQyMDc1LEcke3JufSxFc3RvcXVlISRKJDQ6JEokMjA3NSkpYCxrPWBJRihHJHtybn09IiIsIiIsU1VNSUYoRXN0b3F1ZSEkQSQ0OiRBJDIwNzUsRyR7cm59LEVzdG9xdWUhJEskNDokSyQyMDc1KSlgOwogICBpZihpdGVtKXtjb25zdCBza3VOdW09TnVtYmVyKGl0ZW0uc2t1KTtzZXRGb3JtdWxhQXQoIkciK3JuLGcsTnVtYmVyLmlzRmluaXRlKHNrdU51bSk/c2t1TnVtOml0ZW0uc2t1LE51bWJlci5pc0Zpbml0ZShza3VOdW0pPyJudW1iZXIiOiJzdHJpbmciKTtzZXRGb3JtdWxhQXQoIkgiK3JuLGgsaXRlbS5wcm9kdXRvLCJzdHJpbmciKTtzZXRGb3JtdWxhQXQoIkkiK3JuLGksaXRlbS50YW1hbmhvLCJzdHJpbmciKTtzZXRGb3JtdWxhQXQoIkoiK3JuLGo saXRlbS5jYWl4YXMpO3NldEZvcm11bGFQdCgiSyIrcm4sayxpdGVtLm92b3MpfQogICBlbHNle3NldEZvcm11bGFQdCgiRyIrcm4sZywiIiwic3RyaW5nIik7c2V0Rm9ybXVsYUF0KCJIIitybixoLCIiLCJzdHJpbmciKTtzZXRGb3JtdWxhQXQoIkkiK3JuLGksIiIsInN0cmluZyIpO3NldEZvcm11bGFQdCgiSiIrcm4saiwiIiwic3RyaW5nIik7c2V0Rm9ybXVsYUF0KCJLIitybixrLCIiLCJzdHJpbmciKX0KICAgY29uc3Qgcm93PXJvd0J5TnVtYmVyKHhsc3gscGFpbmVsLmRvYyxybik7aWYocm93KXtjb25zdCB5PXhsc3guZmluZENlbGwocm93LCJZIiksej14bHN4LmZpbmRDZWxsKHJvdywiWiIpO2lmKHkpeGxzeC5jbGVhckNlbGxDb250ZW50KHkpO2lmKHopeGxzeC5jbGVhckNlbGxDb250ZW50KHopfQogIH0KICBhd2FpdCB4bHN4LnNhdmVTaGVldChwYWluZWwpOwogfQogY29uc3QgdGVtPWF3YWl0IHhsc3guc2hlZXRCeU5hbWUoIlRlbS1Ow6NvIFRlbSIpO2lmKHRlbSl7bGV0IHRvdGFsUGVkaWRvPTAsdG90YWxQcm9kdXppcj0wO2ZvcihsZXQgcm49MTA7cm48PTUzO3JuKyspe2NvbnN0IHJvdz1yb3dCeU51bWJlcih4bHN4LHRlbS5kb2Mscm4pO2lmKCFyb3cpY29udGludWU7Y29uc3Qgc2t1PW5vcm1Ta3UoeGxzeC52YWx1ZSh4bHN4LmZpbmRDZWxsKHJvdywiQSIpKSkscGVkaWRvUmF3PXhsc3gudmFsdWUoeGxzeC5maW5kQ2VsbChyb3csIkYiKSksb3Zvc0N4PW51bSh4bHN4LnZhbHVlKHhsc3guZmluZENlbGwocm93LCJEIikpKXx8MCxlc3Q9YnlTa3UuZ2V0KHNrdSk/LmNhaXhhc3x8MDtzZXRGb3JtdWxhQ2FjaGUoeGxzeCx0ZW0uZG9jLHJuLCJFIixlc3QpO3NldEZvcm11bGFDYWNoZSh4bHN4LHRlbS5kb2Mscm4sIkciLGVzdCk7aWYocGVkaWRvUmF3PT09IiJ8fHBlZGlkb1Jhdz09bnVsbCl7c2V0Rm9ybXVsYUNhY2hlKHhsc3gsdGVtLmRvYyxybiwiSCIsIiIsInN0cmluZyIpO3NldEZvcm11bGFDYWNoZSh4bHN4LHRlbS5kb2Mscm4sIkkiLCIiLCJzdHJpbmciKX1lbHNle2NvbnN0IHBlZGlkbz1NYXRoLm1heCgwLG51bShwZWRpZG9SYXcpfHwwKSxwcm9kdXppcj1NYXRoLm1heCgwLHBlZGlkby1lc3QpO3RvdGFsUGVkaWRvKz1wZWRpZG87dG90YWxQcm9kdXppcis9cHJvZHV6aXI7c2V0Rm9ybXVsYUNhY2hlKHhsc3gsdGVtLmRvYyxybiwiSCIscHJvZHV6aXIpO3NldEZvcm11bGFDYWNoZSh4bHN4LHRlbS5kb2Mscm4sIkkiLHByb2R1emlyKm92b3NDeCl9fWNvbnN0IGF0ZW5kaWRvPU1hdGgubWF4KDAsdG90YWxQZWRpZG8tdG90YWxQcm9kdXppcik7c2V0Rm9ybXVsYUNhY2hlKHhsc3gsdGVtLmRvYyw1LCJBIix0b3RhbFBlZGlkbyk7c2V0Rm9ybXVsYUNhY2hlKHhsc3gsdGVtLmRvYyw1LCJEIixhdGVuZGlkbyk7c2V0Rm9ybXVsYUNhY2hlKHhsc3gsdGVtLmRvYyw1LCJHIix0b3RhbFByb2R1emlyKTtzZXRGb3JtdWxhQ2FjaGUoeGxzeCx0ZW0uZG9jLDUsIkkiLHRvdGFsUGVkaWRvP2F0ZW5kaWRvL3RvdGFsUGVkaWRvOjApO2F3YWl0IHhsc3guc2F2ZVNoZWV0KHRlbSl9Cn0K").decode("utf-8")
+          s=s[:start]+replacement+s[end:]
+          s=s.replace("v1.2.10","v1.2.11")
+          assert 'const APP_VERSION="v1.2.11"' in s
+          assert 'const CURRENT_VERSION="v1.2.11"' in s
+          assert 'SUM(Estoque!$J$4:$J$2075)' in s
+          assert 'MATCH(ROW()-10,Prioridade!$F$2:$F$100,0)' in s
+          p.write_text(s,encoding="utf-8")
+          Path("version.json").write_text('{"version":"v1.2.11"}\n',encoding="utf-8")
+          PY
+      - name: Validate JavaScript
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs=require("fs");
+          const html=fs.readFileSync("index.html","utf8");
+          const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)].map(m=>m[1]).filter(s=>s.trim()&&!s.includes('src='));
+          scripts.forEach((s,i)=>{ try{ new Function(s); }catch(e){ console.error("Script",i+1,e); process.exit(1); } });
+          if(!html.includes("v1.2.11")) process.exit(1);
+          NODE
+      - name: Commit patch
+        shell: bash
+        run: |
+          rm -f .github/workflows/patch-panel-formulas.yml
+          git config user.name "marinamartinsquimica-beep"
+          git config user.email "marinamartinsquimica@gmail.com"
+          git add -A
+          git commit -m "fix: painel acompanha estoque por fórmulas v1.2.11"
+          git push origin main
