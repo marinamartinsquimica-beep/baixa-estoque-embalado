@@ -28,8 +28,8 @@ jobs:
           if "async function installPanelFormulas" not in s:
               marker="function renderDetails"
               s=s.replace(marker,helper+marker,1)
-          old="await updateDependentCaches(sx,rew.finalRecords);await sx.forceRecalc();"
-          new="await updateDependentCaches(sx,rew.finalRecords);await installPanelFormulas(sx);await sx.forceRecalc();"
+          old="await updateDependentCaches(sx,rew.finalRecords);"
+          new="await updateDependentCaches(sx,rew.finalRecords);await installPanelFormulas(sx);"
           s=s.replace(old,new)
           s=s.replace("v1.2.10","v1.2.11")
           assert s.count("await installPanelFormulas(sx);")==2
