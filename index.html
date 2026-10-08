@@ -136,13 +136,13 @@ async function appendHistory(xlsx,plan,romaneioName){
  const rows=xlsx.rows(sh.doc);let header=null;
  for(const row of rows){const m=rowHeaderMap(xlsx,row);if(m["SKU"]&&m["LOTE COMPLETO"]){header={rowNum:+row.getAttribute("r"),m};break}}
  if(!header)throw new Error('A aba Histórico não possui cabeçalho SKU e Lote Completo.');
- const aliases={"DATA/HORA":["DATA/HORA","DATA E HORA","DATA HORA"],"SKU":["SKU"],"LOTE COMPLETO":["LOTE COMPLETO"],"CAIXAS SOLICITADAS":["CAIXAS SOLICITADAS","CX SOLICITADAS","SOLICITADO"],"CAIXAS BAIXADAS":["CAIXAS BAIXADAS","CX BAIXADAS","BAIXADO"],"SALDO ANTES":["SALDO ANTES"],"SALDO DEPOIS":["SALDO DEPOIS"],"ROMANEIO":["ROMANEIO","ARQUIVO ROMANEIO"],"STATUS":["STATUS","SITUACAO","SITUAÇÃO"]};
+ const aliases={"DATA/HORA":["DATA/HORA","DATA E HORA","DATA HORA"],"SKU":["SKU"],"PRODUTO":["PRODUTO"],"LOTE COMPLETO":["LOTE COMPLETO"],"CAIXAS SOLICITADAS":["CAIXAS SOLICITADAS","CX SOLICITADAS","SOLICITADO"],"CAIXAS BAIXADAS":["CAIXAS BAIXADAS","CX BAIXADAS","BAIXADO"],"SALDO ANTES":["SALDO ANTES"],"SALDO DEPOIS":["SALDO DEPOIS"],"ROMANEIO":["ROMANEIO","ARQUIVO ROMANEIO","ORIGEM"],"STATUS":["STATUS","SITUACAO","SITUAÇÃO"]};
  const cols={};for(const [k,names] of Object.entries(aliases)){cols[k]=names.map(n=>header.m[normText(n)]).find(Boolean)}
  const data=plan.details.filter(d=>d.baixado>0);if(!data.length)return 0;
  const sheetData=sh.doc.getElementsByTagNameNS(NS,"sheetData")[0];if(!sheetData)throw new Error("Estrutura da aba Histórico inválida.");
  let next=Math.max(header.rowNum,...rows.map(r=>Number(r.getAttribute("r"))||0))+1;
  const when=new Date().toLocaleString("pt-BR");
- for(const d of data){const row=sh.doc.createElementNS(NS,"row");row.setAttribute("r",String(next));const values={"DATA/HORA":when,"SKU":d.sku,"LOTE COMPLETO":d.lote,"CAIXAS SOLICITADAS":d.cx,"CAIXAS BAIXADAS":d.baixado,"SALDO ANTES":d.saldoAntes,"SALDO DEPOIS":d.saldoDepois,"ROMANEIO":romaneioName,"STATUS":d.status};
+ for(const d of data){const row=sh.doc.createElementNS(NS,"row");row.setAttribute("r",String(next));const values={"DATA/HORA":when,"SKU":d.sku,"PRODUTO":"","LOTE COMPLETO":d.lote,"CAIXAS SOLICITADAS":d.cx,"CAIXAS BAIXADAS":d.baixado,"SALDO ANTES":d.saldoAntes,"SALDO DEPOIS":d.saldoDepois,"ROMANEIO":romaneioName,"STATUS":d.status};
  for(const [key,value] of Object.entries(values)){const col=cols[key];if(!col)continue;const cell=xlsx.ensureCell(row,col,next);if(typeof value==="number")xlsx.setNumber(cell,value);else xlsx.setString(cell,value)}
  sheetData.appendChild(row);next++}
  const dim=sh.doc.getElementsByTagNameNS(NS,"dimension")[0];if(dim){const match=(dim.getAttribute("ref")||"A1").match(/^[A-Z]+/);dim.setAttribute("ref",(match?match[0]:"A")+"1:"+Object.values(cols).filter(Boolean).sort((a,b)=>colNumber(b)-colNumber(a))[0]+(next-1))}
